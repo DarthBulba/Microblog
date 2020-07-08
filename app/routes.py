@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import render_template, flash, redirect, url_for, request
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.urls import url_parse
@@ -76,3 +78,10 @@ def user(username):
         {'author': u, 'body': 'Test post #2'}
     ]
     return render_template('user.html', user=u, posts=posts)
+
+
+@app.before_request
+def before_request():
+    if current_user.is_authenticated:
+        current_user.last_seen = datetime.utcnow()
+        db.session.commit()
